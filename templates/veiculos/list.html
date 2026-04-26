@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Veiculos - AutoRevenda{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-car-front"></i> Veiculos</h2>
+    <div class="d-flex gap-2">
+        <a href="{% url 'veiculo_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Cadastrar Veiculo
+        </a>
+        <div class="btn-group">
+            <a href="{% url 'veiculos_list' %}" class="btn btn-outline-primary {% if not status_filter %}active{% endif %}">Todos</a>
+            <a href="{% url 'veiculos_list' %}?status=disponivel" class="btn btn-outline-success {% if status_filter == 'disponivel' %}active{% endif %}">Disponiveis</a>
+            <a href="{% url 'veiculos_list' %}?status=reservado" class="btn btn-outline-warning {% if status_filter == 'reservado' %}active{% endif %}">Reservados</a>
+            <a href="{% url 'veiculos_list' %}?status=vendido" class="btn btn-outline-danger {% if status_filter == 'vendido' %}active{% endif %}">Vendidos</a>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Ano</th>
+                    <th>Cor</th>
+                    <th>Placa</th>
+                    <th>KM</th>
+                    <th>Preco</th>
+                    <th>Status</th>
+                    <th>Acoes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for v in veiculos %}
+                <tr>
+                    <td>{{ v.marca }}</td>
+                    <td>{{ v.modelo }}</td>
+                    <td>{{ v.ano }}</td>
+                    <td>{{ v.cor }}</td>
+                    <td>{{ v.placa }}</td>
+                    <td>{{ v.quilometragem|floatformat:0 }} km</td>
+                    <td><strong>R$ {{ v.preco|floatformat:2 }}</strong></td>
+                    <td><span class="badge badge-{{ v.status }}">{{ v.get_status_display }}</span></td>
+                    <td>
+                        <a href="{% url 'veiculo_detail' v.pk %}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="9" class="text-center text-muted py-4">Nenhum veiculo encontrado</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

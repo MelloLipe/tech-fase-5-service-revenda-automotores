@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{{ veiculo.marca }} {{ veiculo.modelo }} - AutoRevenda{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'veiculos_list' %}">Veiculos</a></li>
+        <li class="breadcrumb-item active">{{ veiculo.marca }} {{ veiculo.modelo }}</li>
+    </ol>
+</nav>
+
+<div class="d-flex justify-content-end mb-3">
+    <a href="{% url 'veiculo_edit' veiculo.pk %}" class="btn btn-outline-primary">
+        <i class="bi bi-pencil-square"></i> Editar Veiculo
+    </a>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between">
+                <h4 class="mb-0">{{ veiculo.marca }} {{ veiculo.modelo }}</h4>
+                <span class="badge badge-{{ veiculo.status }} fs-6">{{ veiculo.get_status_display }}</span>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4"><strong>Ano:</strong> {{ veiculo.ano }}</div>
+                    <div class="col-md-4"><strong>Cor:</strong> {{ veiculo.cor }}</div>
+                    <div class="col-md-4"><strong>Placa:</strong> {{ veiculo.placa }}</div>
+                    <div class="col-md-4"><strong>Chassi:</strong> {{ veiculo.chassi }}</div>
+                    <div class="col-md-4"><strong>KM:</strong> {{ veiculo.quilometragem|floatformat:0 }}</div>
+                    <div class="col-md-4"><strong>Preco:</strong> <span class="text-success fs-5">R$ {{ veiculo.preco|floatformat:2 }}</span></div>
+                </div>
+                {% if veiculo.descricao %}
+                <hr>
+                <p>{{ veiculo.descricao }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white"><h5 class="mb-0">Historico de Vendas</h5></div>
+            <div class="card-body">
+                {% for venda in vendas %}
+                <div class="mb-3 p-2 border rounded">
+                    <strong>{{ venda.comprador.nome }}</strong><br>
+                    <span class="badge badge-{{ venda.status }}">{{ venda.get_status_display }}</span>
+                    <small class="text-muted d-block">{{ venda.criado_em|date:"d/m/Y H:i" }}</small>
+                    <a href="{% url 'venda_detail' venda.pk %}" class="btn btn-sm btn-link p-0">Ver detalhes</a>
+                </div>
+                {% empty %}
+                <p class="text-muted">Nenhuma venda registrada para este veiculo.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

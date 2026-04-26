@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Compradores - AutoRevenda{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-people"></i> Compradores</h2>
+    <a href="{% url 'comprador_create' %}" class="btn btn-primary">
+        <i class="bi bi-person-plus"></i> Cadastrar Comprador
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Telefone</th>
+                    <th>CPF (mascarado)</th>
+                    <th>Cidade/UF</th>
+                    <th>Cadastro</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in compradores %}
+                <tr>
+                    <td><strong>{{ c.nome }}</strong></td>
+                    <td>{{ c.email }}</td>
+                    <td>{{ c.telefone }}</td>
+                    <td><code>{{ c.cpf_masked }}</code></td>
+                    <td>{{ c.cidade }}/{{ c.estado }}</td>
+                    <td>{{ c.criado_em|date:"d/m/Y" }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="text-center text-muted py-4">Nenhum comprador cadastrado</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

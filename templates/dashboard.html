@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - AutoRevenda{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-speedometer2"></i> Dashboard</h2>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card blue shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted">Total de Veiculos</h6>
+                <h2>{{ total_veiculos }}</h2>
+                <small class="text-success"><i class="bi bi-car-front"></i> No estoque</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card green shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted">Disponiveis</h6>
+                <h2>{{ veiculos_disponiveis }}</h2>
+                <small class="text-muted">Prontos para venda</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card orange shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted">Reservados</h6>
+                <h2>{{ veiculos_reservados }}</h2>
+                <small class="text-warning">Aguardando pagamento</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card red shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted">Vendidos</h6>
+                <h2>{{ veiculos_vendidos }}</h2>
+                <small class="text-danger">Baixados do estoque</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card stat-card blue shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted">Compradores Ativos</h6>
+                <h2>{{ total_compradores }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card orange shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted">Vendas em Andamento</h6>
+                <h2>{{ vendas_em_andamento }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card green shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted">Faturamento Total</h6>
+                <h2>R$ {{ faturamento_total|floatformat:2 }}</h2>
+                <small class="text-muted">{{ vendas_concluidas }} vendas concluidas</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-clock-history"></i> Ultimas Vendas</h5>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Veiculo</th>
+                            <th>Comprador</th>
+                            <th>Status</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for venda in ultimas_vendas %}
+                        <tr>
+                            <td><a href="{% url 'venda_detail' venda.pk %}">{{ venda.veiculo.marca }} {{ venda.veiculo.modelo }}</a></td>
+                            <td>{{ venda.comprador.nome }}</td>
+                            <td><span class="badge badge-{{ venda.status }}">{{ venda.get_status_display }}</span></td>
+                            <td>R$ {{ venda.preco_venda|floatformat:2 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center text-muted">Nenhuma venda registrada</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-car-front"></i> Veiculos Recentes</h5>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Veiculo</th>
+                            <th>Ano</th>
+                            <th>Cor</th>
+                            <th>Preco</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for v in veiculos_recentes %}
+                        <tr>
+                            <td><a href="{% url 'veiculo_detail' v.pk %}">{{ v.marca }} {{ v.modelo }}</a></td>
+                            <td>{{ v.ano }}</td>
+                            <td>{{ v.cor }}</td>
+                            <td>R$ {{ v.preco|floatformat:2 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center text-muted">Nenhum veiculo cadastrado</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

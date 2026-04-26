@@ -1,0 +1,41 @@
+[tool.black]
+line-length = 100
+target-version = ["py312"]
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | venv
+  | staticfiles
+  | migrations
+)/
+'''
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+exclude = [
+    ".git",
+    ".venv",
+    "venv",
+    "staticfiles",
+    "*/migrations/*",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "DJ"]
+ignore = [
+    "DJ001",
+]
+
+[tool.bandit]
+exclude_dirs = [
+    ".git",
+    ".venv",
+    "venv",
+    "staticfiles",
+    "*/migrations/*",
+]
+skips = [
+    "B105",
+]

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} - AutoRevenda{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            {% if back_url == 'veiculo_detail' %}
+            <a href="{% url back_url back_kwargs.pk %}">Voltar</a>
+            {% else %}
+            <a href="{% url back_url %}">Voltar</a>
+            {% endif %}
+        </li>
+        <li class="breadcrumb-item active">{{ title }}</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h4 class="mb-0">{{ title }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                    {% endif %}
+
+                    <div class="row g-3">
+                        {% for field in form %}
+                        <div class="{% if field.name == 'descricao' or field.name == 'endereco' or field.name == 'motivo' %}col-12{% else %}col-md-6{% endif %}">
+                            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                            <div class="form-text">{{ field.help_text }}</div>
+                            {% endif %}
+                            {% for error in field.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> {{ submit_label }}
+                        </button>
+                        {% if back_url == 'veiculo_detail' %}
+                        <a href="{% url back_url back_kwargs.pk %}" class="btn btn-outline-secondary">Cancelar</a>
+                        {% else %}
+                        <a href="{% url back_url %}" class="btn btn-outline-secondary">Cancelar</a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
