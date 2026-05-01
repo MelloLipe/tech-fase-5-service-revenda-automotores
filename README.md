@@ -32,7 +32,7 @@ Plataforma web para revenda de veículos automotores com API REST, frontend Djan
 ```bash
 # Clonar repositório
 git clone https://github.com/MelloLipe/tech-fase-5-service-revenda-automotores.git
-cd tech-CHALLENGE-felipe
+cd tech-fase-5-service-revenda-automotores
 
 # Criar ambiente virtual
 python3 -m venv venv
@@ -98,7 +98,7 @@ DEBUG=True python manage.py test
 ## Estrutura do Projeto
 
 ```
-tech-CHALLENGE-felipe/
+tech-fase-5-service-revenda-automotores/
 ├── revenda_veiculos/      # Configuração Django + views frontend
 ├── veiculos/              # App de veículos (CRUD)
 ├── compradores/           # App de compradores (cadastro seguro)

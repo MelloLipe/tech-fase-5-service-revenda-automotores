@@ -54,11 +54,12 @@ def dashboard(request):
 
 
 def devsecops_dashboard(request):
-    branch = "devin/1776620241-fase5-revenda-veiculos"
-    repo_url = "https://github.com/MelloLipe/tech-CHALLENGE-felipe"
+    branch = "feature/fase-5"
+    encoded_branch = branch.replace("/", "%2F")
+    repo_url = "https://github.com/MelloLipe/tech-fase-5-service-revenda-automotores"
     workflow_url = f"{repo_url}/actions/workflows/ci.yml"
-    workflow_runs_url = f"{workflow_url}?query=branch%3Adevin%2F1776620241-fase5-revenda-veiculos"
-    badge_url = f"{workflow_url}/badge.svg?branch=devin%2F1776620241-fase5-revenda-veiculos"
+    workflow_runs_url = f"{workflow_url}?query=branch%3A{encoded_branch}"
+    badge_url = f"{workflow_url}/badge.svg?branch={encoded_branch}"
     context = {
         "repo_url": repo_url,
         "workflow_url": workflow_url,

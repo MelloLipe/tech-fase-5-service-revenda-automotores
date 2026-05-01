@@ -104,7 +104,7 @@ def build_pdf():
     for line in cover_info:
         elements.append(Paragraph(line, styles['BodyJustified']))
     elements.append(Spacer(1, 2*cm))
-    elements.append(Paragraph('<b>Link do GitHub:</b> https://github.com/MelloLipe/tech-CHALLENGE-felipe', styles['BodyJustified']))
+    elements.append(Paragraph('<b>Link do GitHub:</b> https://github.com/MelloLipe/tech-fase-5-service-revenda-automotores', styles['BodyJustified']))
 
     elements.append(PageBreak())
 

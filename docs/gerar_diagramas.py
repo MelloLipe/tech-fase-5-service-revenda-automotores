@@ -1,9 +1,14 @@
 """Gera diagramas de arquitetura e fluxo SAGA como imagens PNG."""
+import os
+
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
+
+
+DOCS_DIR = os.path.dirname(__file__)
 
 
 def desenhar_arquitetura():
@@ -99,7 +104,7 @@ def desenhar_arquitetura():
             fontsize=9, ha='center', color='#004d40')
 
     plt.tight_layout()
-    plt.savefig('/home/ubuntu/repos/tech-CHALLENGE-felipe/docs/diagrama_arquitetura.png',
+    plt.savefig(os.path.join(DOCS_DIR, 'diagrama_arquitetura.png'),
                 dpi=150, bbox_inches='tight', facecolor='#f8f9fa')
     plt.close()
     print('diagrama_arquitetura.png gerado')
@@ -181,7 +186,7 @@ def desenhar_saga():
     ax.text(8.75, 1.6, info_text, fontsize=9, ha='center', va='center', color='#1a237e')
 
     plt.tight_layout()
-    plt.savefig('/home/ubuntu/repos/tech-CHALLENGE-felipe/docs/diagrama_saga.png',
+    plt.savefig(os.path.join(DOCS_DIR, 'diagrama_saga.png'),
                 dpi=150, bbox_inches='tight', facecolor='#f8f9fa')
     plt.close()
     print('diagrama_saga.png gerado')
@@ -276,7 +281,7 @@ def desenhar_seguranca():
             fontsize=9, ha='center', va='center', color='#b71c1c')
 
     plt.tight_layout()
-    plt.savefig('/home/ubuntu/repos/tech-CHALLENGE-felipe/docs/diagrama_seguranca.png',
+    plt.savefig(os.path.join(DOCS_DIR, 'diagrama_seguranca.png'),
                 dpi=150, bbox_inches='tight', facecolor='#f8f9fa')
     plt.close()
     print('diagrama_seguranca.png gerado')
