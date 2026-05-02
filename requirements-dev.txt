@@ -6,4 +6,4 @@ coverage>=7.6
 pip-audit>=2.7
 ruff>=0.8
 matplotlib>=3.8
-reportlab>=4.0
+reportlab>=4.5.0
