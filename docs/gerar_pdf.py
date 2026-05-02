@@ -19,6 +19,7 @@ from reportlab.lib import colors
 
 def build_pdf():
     output_path = os.path.join(os.path.dirname(__file__), '..', 'Tech_Challenge_Fase5_Entregaveis.pdf')
+    video_url = os.environ.get('VIDEO_URL', '').strip()
     doc = SimpleDocTemplate(
         output_path,
         pagesize=A4,
@@ -105,6 +106,8 @@ def build_pdf():
         elements.append(Paragraph(line, styles['BodyJustified']))
     elements.append(Spacer(1, 2*cm))
     elements.append(Paragraph('<b>Link do GitHub:</b> https://github.com/MelloLipe/tech-fase-5-service-revenda-automotores', styles['BodyJustified']))
+    if video_url:
+        elements.append(Paragraph(f'<b>Link do video demonstrativo:</b> {video_url}', styles['BodyJustified']))
 
     elements.append(PageBreak())
 
