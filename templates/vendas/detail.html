@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% block title %}Venda #{{ venda.id|truncatechars:8 }} - AutoRevenda{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'vendas_list' %}">Vendas</a></li>
+        <li class="breadcrumb-item active">Venda #{{ venda.id|truncatechars:8 }}</li>
+    </ol>
+</nav>
+
+<div class="row g-4">
+    <div class="col-md-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white d-flex justify-content-between">
+                <h4 class="mb-0">Detalhes da Venda</h4>
+                <span class="badge badge-{{ venda.status }} fs-6">{{ venda.get_status_display }}</span>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Veiculo</h6>
+                        <p class="mb-1"><strong>{{ venda.veiculo.marca }} {{ venda.veiculo.modelo }}</strong></p>
+                        <p class="mb-1">Ano: {{ venda.veiculo.ano }} | Cor: {{ venda.veiculo.cor }}</p>
+                        <p class="mb-0">Placa: {{ venda.veiculo.placa }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Comprador</h6>
+                        <p class="mb-1"><strong>{{ venda.comprador.nome }}</strong></p>
+                        <p class="mb-1">{{ venda.comprador.email }}</p>
+                        <p class="mb-0">CPF: <code>{{ venda.comprador.cpf_masked }}</code></p>
+                    </div>
+                </div>
+                <hr>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <h6 class="text-muted">Valor da Venda</h6>
+                        <p class="fs-4 text-success mb-0">R$ {{ venda.preco_venda|floatformat:2 }}</p>
+                    </div>
+                    {% if venda.codigo_pagamento %}
+                    <div class="col-md-4">
+                        <h6 class="text-muted">Codigo de Pagamento</h6>
+                        <code class="fs-6">{{ venda.codigo_pagamento }}</code>
+                    </div>
+                    {% endif %}
+                    {% if venda.motivo_cancelamento %}
+                    <div class="col-md-4">
+                        <h6 class="text-muted">Motivo Cancelamento</h6>
+                        <p class="text-danger mb-0">{{ venda.motivo_cancelamento }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Fluxo SAGA Visual -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-diagram-3"></i> Fluxo de Compra (SAGA)</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between text-center">
+                    {% with steps="selecionado,reservado,pagamento_pendente,pago,concluido" %}
+                    {% for step in steps|make_list %}
+                    {% endfor %}
+                    {% endwith %}
+
+                    <div class="flex-fill">
+                        <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center {% if venda.data_selecao %}bg-success text-white{% else %}bg-light{% endif %}" style="width:40px;height:40px;">
+                            <i class="bi bi-hand-index"></i>
+                        </div>
+                        <small class="d-block mt-1">Selecao</small>
+                        {% if venda.data_selecao %}<small class="text-muted">{{ venda.data_selecao|date:"d/m H:i" }}</small>{% endif %}
+                    </div>
+                    <div class="flex-fill">
+                        <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center {% if venda.data_reserva %}bg-success text-white{% else %}bg-light{% endif %}" style="width:40px;height:40px;">
+                            <i class="bi bi-bookmark-check"></i>
+                        </div>
+                        <small class="d-block mt-1">Reserva</small>
+                        {% if venda.data_reserva %}<small class="text-muted">{{ venda.data_reserva|date:"d/m H:i" }}</small>{% endif %}
+                    </div>
+                    <div class="flex-fill">
+                        <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center {% if venda.codigo_pagamento %}bg-success text-white{% else %}bg-light{% endif %}" style="width:40px;height:40px;">
+                            <i class="bi bi-qr-code"></i>
+                        </div>
+                        <small class="d-block mt-1">Pagamento</small>
+                    </div>
+                    <div class="flex-fill">
+                        <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center {% if venda.data_pagamento %}bg-success text-white{% else %}bg-light{% endif %}" style="width:40px;height:40px;">
+                            <i class="bi bi-credit-card"></i>
+                        </div>
+                        <small class="d-block mt-1">Pago</small>
+                        {% if venda.data_pagamento %}<small class="text-muted">{{ venda.data_pagamento|date:"d/m H:i" }}</small>{% endif %}
+                    </div>
+                    <div class="flex-fill">
+                        <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center {% if venda.data_conclusao %}bg-success text-white{% else %}bg-light{% endif %}" style="width:40px;height:40px;">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                        <small class="d-block mt-1">Concluido</small>
+                        {% if venda.data_conclusao %}<small class="text-muted">{{ venda.data_conclusao|date:"d/m H:i" }}</small>{% endif %}
+                    </div>
+                </div>
+
+                {% if venda.status == 'cancelado' %}
+                <div class="alert alert-danger mt-3 mb-0">
+                    <i class="bi bi-x-circle"></i> Venda cancelada em {{ venda.data_cancelamento|date:"d/m/Y H:i" }}
+                    {% if venda.motivo_cancelamento %} - {{ venda.motivo_cancelamento }}{% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-lightning-charge"></i> Acoes da Venda</h5>
+            </div>
+            <div class="card-body">
+                {% if venda.status == 'selecionado' %}
+                <form method="post" action="{% url 'venda_action' venda.pk 'reservar' %}" class="mb-2">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-warning w-100">
+                        <i class="bi bi-bookmark-check"></i> Reservar Veiculo
+                    </button>
+                </form>
+                {% endif %}
+
+                {% if venda.status == 'reservado' %}
+                <form method="post" action="{% url 'venda_action' venda.pk 'gerar-pagamento' %}" class="mb-2">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-qr-code"></i> Gerar Pagamento
+                    </button>
+                </form>
+                {% endif %}
+
+                {% if venda.status == 'pagamento_pendente' %}
+                <form method="post" action="{% url 'venda_action' venda.pk 'confirmar-pagamento' %}" class="mb-2">
+                    {% csrf_token %}
+                    <label class="form-label" for="{{ confirmar_pagamento_form.codigo_pagamento.id_for_label }}">
+                        Codigo de pagamento
+                    </label>
+                    {{ confirmar_pagamento_form.codigo_pagamento }}
+                    <button type="submit" class="btn btn-success w-100 mt-2">
+                        <i class="bi bi-credit-card"></i> Confirmar Pagamento
+                    </button>
+                </form>
+                {% endif %}
+
+                {% if venda.status == 'pago' %}
+                <form method="post" action="{% url 'venda_action' venda.pk 'concluir' %}" class="mb-2">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="bi bi-check-circle"></i> Concluir Venda
+                    </button>
+                </form>
+                {% endif %}
+
+                {% if venda.status != 'concluido' and venda.status != 'cancelado' %}
+                <hr>
+                <form method="post" action="{% url 'venda_action' venda.pk 'cancelar' %}">
+                    {% csrf_token %}
+                    <label class="form-label" for="{{ cancelar_venda_form.motivo.id_for_label }}">Motivo do cancelamento</label>
+                    {{ cancelar_venda_form.motivo }}
+                    <button type="submit" class="btn btn-outline-danger w-100 mt-2">
+                        <i class="bi bi-x-circle"></i> Cancelar Venda
+                    </button>
+                </form>
+                {% else %}
+                <p class="text-muted mb-0">Venda finalizada. Nenhuma acao pendente.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-white"><h5 class="mb-0"><i class="bi bi-clock-history"></i> Timeline</h5></div>
+            <div class="card-body">
+                <div class="timeline">
+                    {% for h in venda.historico.all %}
+                    <div class="timeline-item">
+                        <strong>{{ h.get_status_novo_display|default:h.status_novo }}</strong>
+                        <p class="mb-1 small">{{ h.descricao }}</p>
+                        <small class="text-muted">{{ h.criado_em|date:"d/m/Y H:i:s" }}</small>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">Nenhum historico registrado.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

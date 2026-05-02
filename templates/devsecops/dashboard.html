@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block title %}DevSecOps - AutoRevenda{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+        <h2 class="mb-1"><i class="bi bi-shield-check"></i> DevSecOps</h2>
+        <p class="text-muted mb-0">Qualidade, seguranca, testes e prontidao de deploy</p>
+    </div>
+    <div class="text-end">
+        <a href="{{ workflow_url }}" target="_blank" class="btn btn-outline-primary">
+            <i class="bi bi-github"></i> GitHub Actions
+        </a>
+        <div class="mt-2">
+            <img src="{{ badge_url }}" alt="Status do workflow CI" onerror="this.style.display='none';this.nextElementSibling.classList.remove('d-none');">
+            <span class="badge bg-secondary d-none">CI aguardando primeira execucao no GitHub</span>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-8">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-diagram-3"></i> Pipeline de Deploy</h5>
+                <span class="badge bg-dark">{{ branch }}</span>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    {% for gate in quality_gates %}
+                    <div class="col-md-6">
+                        <div class="border rounded p-3 h-100 bg-white">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <h6 class="mb-0">
+                                    <i class="bi {{ gate.icon }} text-{{ gate.variant }}"></i>
+                                    {{ gate.name }}
+                                </h6>
+                                <span class="badge bg-{{ gate.variant }}">{{ gate.status }}</span>
+                            </div>
+                            <p class="text-muted small mb-2">{{ gate.description }}</p>
+                            <code class="small d-block">{{ gate.command }}</code>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-clipboard2-check"></i> Resultado Validado</h5>
+            </div>
+            <div class="card-body">
+                {% for label, value in validated_results %}
+                <div class="d-flex gap-2 mb-3">
+                    <i class="bi bi-check-circle-fill text-success"></i>
+                    <div>
+                        <strong class="d-block">{{ label }}</strong>
+                        <span class="text-muted small">{{ value }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card stat-card green shadow-sm h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Cobertura de Testes</h6>
+                <h2>73%</h2>
+                <small class="text-success"><i class="bi bi-arrow-up-circle"></i> Gate minimo: 70%</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card red shadow-sm h-100">
+            <div class="card-body">
+                <h6 class="text-muted">SAST</h6>
+                <h2>Bandit</h2>
+                <small class="text-muted">Analise estatica de seguranca</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card orange shadow-sm h-100">
+            <div class="card-body">
+                <h6 class="text-muted">SCA + SBOM</h6>
+                <h2>pip-audit</h2>
+                <small class="text-muted">Dependencias auditadas e SBOM CycloneDX</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-file-earmark-arrow-down"></i> Evidencias</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">A pipeline publica relatorios para auditoria e evidencia.</p>
+                <ul class="list-group list-group-flush">
+                    {% for artifact in artifacts %}
+                    <li class="list-group-item px-0">
+                        <a href="{{ artifact.url }}" target="_blank" rel="noopener" class="d-flex justify-content-between gap-3 text-decoration-none">
+                            <span>
+                                <strong class="d-block text-body">{{ artifact.name }}</strong>
+                                <small class="text-muted">{{ artifact.description }}</small>
+                            </span>
+                            <i class="bi bi-box-arrow-up-right text-muted"></i>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <hr>
+                <a href="{{ workflow_runs_url }}" target="_blank" rel="noopener" class="btn btn-outline-dark btn-sm mb-3">
+                    <i class="bi bi-list-check"></i> Abrir execucoes e artifacts
+                </a>
+                <p class="text-muted mb-2">O GitHub Actions Summary tambem consolida:</p>
+                <ul class="mb-0">
+                    {% for summary in summaries %}
+                    <li>{{ summary }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-rocket"></i> Gate de Deploy</h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-3">
+                    O deploy deve acontecer apenas depois de todos os gates passarem:
+                    qualidade, testes, SAST, SCA e readiness.
+                </p>
+                <div class="alert alert-success mb-0">
+                    <i class="bi bi-check2-circle"></i>
+                    Fluxo preparado para demonstrar uma esteira profissional antes do deploy no Render.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

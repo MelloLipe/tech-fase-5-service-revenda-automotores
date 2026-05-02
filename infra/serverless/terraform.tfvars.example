@@ -1,0 +1,13 @@
+project_name = "autorevenda"
+environment  = "reference"
+aws_region   = "us-east-1"
+
+allowed_origins = [
+  "https://example.com"
+]
+
+# Opcional: informe para receber alarmes quando provisionar de verdade.
+alarm_email = ""
+
+# Necessario apenas para terraform plan/apply real.
+lambda_package_path = "build/lambda.zip"
