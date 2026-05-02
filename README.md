@@ -94,6 +94,7 @@ DEBUG=True python manage.py test
 - [Arquitetura](docs/arquitetura.md) — Desenho da solução, justificativas e serviços de segurança
 - [Relatório de Segurança](docs/relatorio_seguranca.md) — Dados sensíveis, políticas de acesso e mitigação de riscos
 - [Relatório SAGA](docs/relatorio_saga.md) — Tipo de orquestração, justificativa e fluxo de compensações
+- [Infraestrutura Serverless](infra/serverless/README.md) — Terraform de referência para AWS com API Gateway, Lambda, Aurora Serverless, SQS/EventBridge, CloudFront, WAF, KMS e CloudWatch
 
 ## Estrutura do Projeto
 

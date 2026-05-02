@@ -110,6 +110,106 @@ def desenhar_arquitetura():
     print('diagrama_arquitetura.png gerado')
 
 
+def desenhar_arquitetura_serverless():
+    fig, ax = plt.subplots(1, 1, figsize=(18, 12))
+    ax.set_xlim(0, 18)
+    ax.set_ylim(0, 12)
+    ax.axis('off')
+    fig.patch.set_facecolor('#f8f9fa')
+
+    ax.text(9, 11.5, 'Arquitetura Cloud Serverless de Referencia',
+            fontsize=18, fontweight='bold', ha='center', color='#1a1a2e')
+    ax.text(9, 11.05, 'Modelo pensado para producao, mesmo com simulacao local/Render no projeto',
+            fontsize=11, ha='center', color='#666', fontstyle='italic')
+
+    # Client edge
+    edge = FancyBboxPatch((0.7, 9.1), 16.6, 1.3, boxstyle="round,pad=0.15",
+                          facecolor='#e3f2fd', edgecolor='#1565c0', linewidth=2)
+    ax.add_patch(edge)
+    ax.text(9, 10.05, 'CLIENTE WEB / MOBILE', fontsize=13, fontweight='bold',
+            ha='center', color='#1565c0')
+    ax.text(4, 9.55, 'Browser\nHTTPS', fontsize=10, ha='center', color='#333')
+    ax.text(9, 9.55, 'CloudFront + WAF\nCDN, TLS, protecao OWASP', fontsize=10,
+            ha='center', color='#333')
+    ax.text(14, 9.55, 'S3 Static Website\nFrontend estatico', fontsize=10,
+            ha='center', color='#333')
+
+    # API and compute
+    api = FancyBboxPatch((1, 6.7), 5.2, 1.4, boxstyle="round,pad=0.15",
+                         facecolor='#fff3e0', edgecolor='#ef6c00', linewidth=2)
+    compute = FancyBboxPatch((6.8, 6.7), 5.2, 1.4, boxstyle="round,pad=0.15",
+                             facecolor='#e8f5e9', edgecolor='#2e7d32', linewidth=2)
+    queue = FancyBboxPatch((12.6, 6.7), 4.4, 1.4, boxstyle="round,pad=0.15",
+                           facecolor='#f3e5f5', edgecolor='#6a1b9a', linewidth=2)
+    for box in (api, compute, queue):
+        ax.add_patch(box)
+    ax.text(3.6, 7.65, 'API Gateway', fontsize=12, fontweight='bold',
+            ha='center', color='#ef6c00')
+    ax.text(3.6, 7.15, 'Rotas REST\nRate limit + auth', fontsize=9,
+            ha='center', color='#333')
+    ax.text(9.4, 7.65, 'AWS Lambda', fontsize=12, fontweight='bold',
+            ha='center', color='#2e7d32')
+    ax.text(9.4, 7.15, 'Veiculos | Compradores | Vendas\nExecucao sob demanda', fontsize=9,
+            ha='center', color='#333')
+    ax.text(14.8, 7.65, 'EventBridge / SQS', fontsize=12, fontweight='bold',
+            ha='center', color='#6a1b9a')
+    ax.text(14.8, 7.15, 'Eventos da SAGA\nRetry + DLQ', fontsize=9,
+            ha='center', color='#333')
+
+    # Data and secrets
+    data_boxes = [
+        (1.0, 4.2, 4.6, 1.3, 'Aurora Serverless v2\nPostgreSQL relacional\nACID para reserva/venda', '#e0f7fa', '#00695c'),
+        (6.2, 4.2, 3.8, 1.3, 'Secrets Manager\nSECRET_KEY, DB_URL\nrotacao controlada', '#fff8e1', '#f9a825'),
+        (10.6, 4.2, 3.0, 1.3, 'KMS\ncriptografia\nem repouso', '#fce4ec', '#ad1457'),
+        (14.2, 4.2, 2.8, 1.3, 'CloudWatch\nlogs, metricas\nalarmes', '#ede7f6', '#4527a0'),
+    ]
+    for x, y, w, h, text, fc, tc in data_boxes:
+        box = FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.12",
+                             facecolor=fc, edgecolor=tc, linewidth=1.8)
+        ax.add_patch(box)
+        ax.text(x + w/2, y + h/2, text, fontsize=9, ha='center',
+                va='center', color=tc, fontweight='bold')
+
+    # CI/CD and local simulation
+    cicd = FancyBboxPatch((1, 1.2), 7.8, 1.4, boxstyle="round,pad=0.15",
+                          facecolor='#e8eaf6', edgecolor='#283593', linewidth=2)
+    local = FancyBboxPatch((9.2, 1.2), 7.8, 1.4, boxstyle="round,pad=0.15",
+                           facecolor='#f5f5f5', edgecolor='#616161', linewidth=2)
+    ax.add_patch(cicd)
+    ax.add_patch(local)
+    ax.text(4.9, 2.15, 'GitHub Actions', fontsize=12, fontweight='bold',
+            ha='center', color='#283593')
+    ax.text(4.9, 1.65, 'CI/CD: testes, lint, SAST, SCA, deploy controlado',
+            fontsize=9, ha='center', color='#333')
+    ax.text(13.1, 2.15, 'Simulacao neste projeto', fontsize=12, fontweight='bold',
+            ha='center', color='#616161')
+    ax.text(13.1, 1.65, 'Django + Render/SQLite local reproduz o fluxo funcional\nsem provisionar cloud paga',
+            fontsize=9, ha='center', color='#333')
+
+    # Arrows
+    arrow = dict(arrowstyle='->', color='#1a1a2e', lw=1.8)
+    ax.annotate('', xy=(3.6, 8.1), xytext=(6.9, 9.1), arrowprops=arrow)
+    ax.annotate('', xy=(9.4, 6.7), xytext=(3.6, 6.7), arrowprops=arrow)
+    ax.annotate('', xy=(12.6, 7.4), xytext=(12.0, 7.4), arrowprops=arrow)
+    ax.annotate('', xy=(3.3, 5.5), xytext=(8.8, 6.7), arrowprops=arrow)
+    ax.annotate('', xy=(8.1, 5.5), xytext=(9.0, 6.7), arrowprops=arrow)
+    ax.annotate('', xy=(12.1, 5.5), xytext=(9.8, 6.7), arrowprops=arrow)
+    ax.annotate('', xy=(15.6, 5.5), xytext=(10.2, 6.7), arrowprops=arrow)
+    ax.annotate('', xy=(4.9, 2.6), xytext=(4.9, 4.2), arrowprops=arrow)
+    ax.annotate('', xy=(13.1, 2.6), xytext=(13.1, 4.2), arrowprops=arrow)
+
+    note = ('Decisao arquitetural: o projeto implementa Django/Render para permitir demonstracao local e gratuita, '
+            'mas o desenho de producao prioriza servicos gerenciaveis/serverless para reduzir operacao, '
+            'ganhar escalabilidade sob demanda e manter seguranca nativa da nuvem.')
+    ax.text(9, 0.45, note, fontsize=9, ha='center', color='#37474f', wrap=True)
+
+    plt.tight_layout()
+    plt.savefig(os.path.join(DOCS_DIR, 'diagrama_arquitetura_serverless.png'),
+                dpi=150, bbox_inches='tight', facecolor='#f8f9fa')
+    plt.close()
+    print('diagrama_arquitetura_serverless.png gerado')
+
+
 def desenhar_saga():
     fig, ax = plt.subplots(1, 1, figsize=(18, 10))
     ax.set_xlim(0, 18)
@@ -289,5 +389,6 @@ def desenhar_seguranca():
 
 if __name__ == '__main__':
     desenhar_arquitetura()
+    desenhar_arquitetura_serverless()
     desenhar_saga()
     desenhar_seguranca()

@@ -136,8 +136,30 @@ def build_pdf():
 
     elements.append(PageBreak())
 
+    elements.append(Paragraph('1.3 Arquitetura Cloud Serverless de Referencia', styles['SubSection']))
+    elements.append(Paragraph(
+        'Embora a implementacao deste repositorio rode localmente e possa ser simulada no Render para fins '
+        'academicos, a arquitetura foi pensada para uma evolucao em nuvem usando servicos serverless e '
+        'gerenciaveis. O objetivo do desenho abaixo e demonstrar como a solucao poderia ser implantada em '
+        'producao com menor operacao manual, escalabilidade sob demanda e seguranca nativa da plataforma cloud.',
+        styles['BodyJustified'],
+    ))
+    img_arq_serverless = os.path.join(docs_dir, 'diagrama_arquitetura_serverless.png')
+    if os.path.exists(img_arq_serverless):
+        elements.append(Image(img_arq_serverless, width=16*cm, height=10.6*cm))
+    elements.append(Spacer(1, 0.4*cm))
+    elements.append(Paragraph(
+        'Neste modelo, CloudFront e WAF protegem e distribuem o frontend; API Gateway publica as rotas REST; '
+        'AWS Lambda executa as regras de negocio sob demanda; EventBridge/SQS desacoplam eventos da SAGA; '
+        'Aurora Serverless v2 preserva as transacoes relacionais necessarias para reserva e venda; '
+        'Secrets Manager, KMS e CloudWatch concentram segredos, criptografia, logs e observabilidade.',
+        styles['BodyJustified'],
+    ))
+
+    elements.append(PageBreak())
+
     # Componentes e justificativas
-    elements.append(Paragraph('1.3 Servicos Utilizados e Justificativas', styles['SubSection']))
+    elements.append(Paragraph('1.4 Servicos Utilizados e Justificativas', styles['SubSection']))
 
     # Table of services
     service_data = [
@@ -190,16 +212,21 @@ def build_pdf():
     elements.append(service_table)
     elements.append(Spacer(1, 0.5*cm))
 
-    elements.append(Paragraph('1.4 Alternativas Consideradas e Descartadas', styles['SubSection']))
+    elements.append(Paragraph('1.5 Alternativas Consideradas e Decisoes Arquiteturais', styles['SubSection']))
     alternatives = [
-        '<b>Heroku</b>: Removeu o plano gratuito em 2022. Descartado por custo.',
-        '<b>Railway</b>: Free tier muito limitado em horas de execucao mensais.',
-        '<b>Fly.io</b>: Requer cartao de credito mesmo para o plano gratuito.',
-        '<b>AWS Lambda + API Gateway</b>: Complexidade excessiva para o escopo. Custo potencial com uso. '
-        'Cold starts prejudicariam a experiencia do usuario.',
-        '<b>AWS ECS/Fargate</b>: Custo elevado para um projeto academico.',
-        '<b>DynamoDB/NoSQL</b>: Descartado pela necessidade de transacoes ACID com locks pessimistas '
-        'no fluxo de reserva/venda (essencial para SAGA).',
+        '<b>Render</b>: escolhido para simulacao executavel por ser simples, gratuito e gerenciavel, '
+        'permitindo gravar o video e demonstrar a aplicacao sem provisionar cloud paga.',
+        '<b>AWS Lambda + API Gateway</b>: arquitetura alvo serverless considerada para producao. '
+        'Nao foi implementada no repositorio por aumentar complexidade, custo e tempo de entrega academica, '
+        'mas foi modelada no desenho de referencia.',
+        '<b>Aurora Serverless v2</b>: alternativa serverless ao PostgreSQL gerenciado, preservando SQL, '
+        'transacoes ACID e escalabilidade automatica.',
+        '<b>DynamoDB/NoSQL</b>: descartado como banco principal pela necessidade de transacoes relacionais '
+        'e locks pessimistas no fluxo de reserva/venda, essenciais para consistencia da SAGA.',
+        '<b>AWS ECS/Fargate</b>: alternativa gerenciavel para containers, mas com custo e operacao maiores '
+        'que Render para o escopo do trabalho.',
+        '<b>Heroku/Railway/Fly.io</b>: alternativas PaaS avaliadas, mas descartadas por custo, limites de '
+        'free tier ou exigencia de cartao de credito.',
     ]
     for alt in alternatives:
         elements.append(Paragraph(f'- {alt}', styles['BulletItem']))
@@ -207,9 +234,9 @@ def build_pdf():
     elements.append(PageBreak())
 
     # Seguranca na nuvem
-    elements.append(Paragraph('1.5 Servicos de Seguranca na Nuvem', styles['SubSection']))
+    elements.append(Paragraph('1.6 Servicos de Seguranca na Nuvem', styles['SubSection']))
 
-    elements.append(Paragraph('1.5.1 Render SSL/TLS (Seguranca de Transporte)', styles['SubSubSection']))
+    elements.append(Paragraph('1.6.1 Render SSL/TLS (Seguranca de Transporte)', styles['SubSubSection']))
     elements.append(Paragraph(
         '<b>O que e:</b> O Render fornece certificados SSL/TLS gratuitos e automaticos (Let\'s Encrypt) '
         'para todas as aplicacoes deployadas na plataforma.',
@@ -233,7 +260,7 @@ def build_pdf():
         styles['BodyJustified'],
     ))
 
-    elements.append(Paragraph('1.5.2 Render Network Isolation (Seguranca de Rede)', styles['SubSubSection']))
+    elements.append(Paragraph('1.6.2 Render Network Isolation (Seguranca de Rede)', styles['SubSubSection']))
     elements.append(Paragraph(
         '<b>O que e:</b> O PostgreSQL no Render e acessivel apenas internamente, dentro da rede privada.',
         styles['BodyJustified'],
@@ -244,7 +271,7 @@ def build_pdf():
         styles['BodyJustified'],
     ))
 
-    elements.append(Paragraph('1.5.3 Django Security Middleware (Seguranca de Aplicacao)', styles['SubSubSection']))
+    elements.append(Paragraph('1.6.3 Django Security Middleware (Seguranca de Aplicacao)', styles['SubSubSection']))
     security_items = [
         '<b>SecurityMiddleware (HSTS)</b>: Strict-Transport-Security forca HTTPS por 1 ano, '
         'prevenindo downgrade attacks.',
@@ -264,7 +291,7 @@ def build_pdf():
         styles['BodyJustified'],
     ))
 
-    elements.append(Paragraph('1.5.4 Hashing Criptografico de Dados Sensiveis', styles['SubSubSection']))
+    elements.append(Paragraph('1.6.4 Hashing Criptografico de Dados Sensiveis', styles['SubSubSection']))
     elements.append(Paragraph(
         '<b>O que e:</b> CPF e RG sao tratados como dados pessoais identificadores criticos e '
         'armazenados como hashes SHA-256 (funcao de hash criptografica irreversivel). '
@@ -279,7 +306,7 @@ def build_pdf():
         styles['BodyJustified'],
     ))
 
-    elements.append(Paragraph('1.5.5 Variaveis de Ambiente (12-Factor App)', styles['SubSubSection']))
+    elements.append(Paragraph('1.6.5 Variaveis de Ambiente (12-Factor App)', styles['SubSubSection']))
     elements.append(Paragraph(
         '<b>O que e:</b> SECRET_KEY, DATABASE_URL e configuracoes sensiveis sao gerenciadas via '
         'variaveis de ambiente (os.environ), nunca armazenadas no codigo-fonte.',
