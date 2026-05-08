@@ -3,7 +3,7 @@
 bandit[toml]>=1.7.10
 black>=24.0
 coverage>=7.13.5
-pip-audit>=2.7
+pip-audit>=2.10.0
 ruff>=0.8
 matplotlib>=3.8
 reportlab>=4.5.0
